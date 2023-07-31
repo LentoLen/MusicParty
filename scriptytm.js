@@ -16,6 +16,6 @@ async function search() {
    .then(data => {
         const videoId = data.videos[0].videoId;
         const vid_frame = document.getElementById("vid_frame")
-        vid_frame.src = `https://www.youtube.com/embed/${videoId}`
+        vid_frame.src = `https://www.youtube.com/embed/${videoId}?&autoplay=1`
     })
 }
