@@ -12,7 +12,9 @@
     <div class="content">
         <div id="searchbar">
             <input spellcheck="false" autocomplete="off" id="searchInput" type="search" placeholder="search" oninput="suggest(0)">
-            <div id="suggestion" onclick="applySuggestion()"></div>
+            <div id="suggestion-container">
+                <div id="suggestion" onclick="applySuggestion()"></div>
+            </div>
             <input id="searchSubmit" type="submit" value="search" class="material-icons" onclick="search()">
         </div>
         <iframe class="player" id="vid_frame" width="560" height="315" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
