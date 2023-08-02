@@ -1,0 +1,128 @@
+:root {
+    --bg: #212121;
+    --fg: white;
+    --secFg: #909090;
+    --secBg: rgba(255, 255, 255, 0.2);
+    --bdradius: 25px;
+  }
+
+body {
+    font-family: system-ui, sans-serif;
+    color: var(--fg);
+    font-size: 1.125rem;
+    line-height: 1.5;
+}
+
+.bg-image {
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    display: block;
+    background-image: linear-gradient(333deg, hsl(232.3, 29%, 42%) 0%, rgb(232, 218, 218) 100%); 
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    transform: scale(1.5); 
+    filter: blur(400px) brightness(50%) saturate(4);
+}
+
+.content {
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    margin-left: 20px;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+
+#searchbar {
+    width: min(100%, 600px);
+    border: 0;
+    border-radius: 25px;
+    background-color: var(--secBg);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    height: 50px;
+    padding: 2px;
+    display: flex;
+    margin-top: 20px;
+    position: relative; 
+}
+
+#searchInput {
+    font-family: inherit;
+    width: 100%;
+    flex-grow: 2;
+    border: none;
+    background-color: transparent;
+    font-size: 1em;
+    color: inherit;
+    padding-left: 20px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+#searchSubmit {
+    border: none;
+    background-color: transparent;
+    color: var(--fg);
+    padding-right: 10px;
+}
+
+input:focus {
+    outline: none;
+}
+
+#suggestion {
+    display: none;
+    width: 90%;
+    overflow: hidden;
+    white-space: nowrap;
+    flex-grow: 2;
+    border: none;
+    background-color: transparent;
+    font-size: 1em;
+    color: inherit;
+    padding-left: 20px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    position: absolute;
+    top: 13.5px;
+    left: 2px;
+    opacity: 0.7; 
+    pointer-events: none; 
+}
+
+
+    /* Style for the video iframe */
+    #vid_frame {
+        width: min(100%, 600px);
+        height: auto;
+        margin-top: 20px;
+        aspect-ratio: 1/1;
+        border-radius: 2rem;
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 20px 30px;
+    }
+
+#vid_info {
+    font-size: 2rem;
+    margin-top: 30px;
+    text-shadow: 0 4px 30px rgba(0,0,0,0.1);
+    width: min(100%, 600px);
+    overflow: hidden;
+}
+
+@media (max-width: 600px) {
+    #vid_info {
+        font-size: 1.25rem;
+    }
+    #suggestion {
+        width: 70%;
+    }
+}
