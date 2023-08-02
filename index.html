@@ -11,12 +11,12 @@
     <div class="bg-image" id="bg_img"></div>
     <div class="content">
         <div id="searchbar">
-            <input spellcheck="false" autocomplete="off" id="searchInput" type="search" placeholder="search" oninput="suggest()">
-            <div id="suggestion">hello</div>
+            <input spellcheck="false" autocomplete="off" id="searchInput" type="search" placeholder="search" oninput="suggest(0)">
+            <div id="suggestion" onclick="applySuggestion()"></div>
             <input id="searchSubmit" type="submit" value="search" class="material-icons" onclick="search()">
         </div>
         <iframe class="player" id="vid_frame" width="560" height="315" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-        <div class="player" id="vid_info">hello world - me</div>
+        <div class="player" id="vid_info"></div>
     </div>
     <script src="scriptytm.js"></script>
     <script src="suggestions.js"></script>

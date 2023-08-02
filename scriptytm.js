@@ -18,7 +18,7 @@ function search() {
         return
     }
     searchInput.value = ""
-    suggestions_div.style.display = "none";
+    suggestions_div.innerText = ""
 
     const searchUrl = `${apiUrl}/search/?query=${encodeURIComponent(inp)}&limit=1`
 
@@ -35,6 +35,7 @@ function search() {
             console.log(thumbnail)
             const vid_frame = document.getElementById("vid_frame")
             vid_frame.src = `https://www.youtube.com/embed/${videoId}?&autoplay=1`
+            vid_frame.style.display = "block"
             document.getElementById("vid_info").innerText = `${title} - ${artist}`
         }
     })
@@ -49,3 +50,5 @@ searchInput.addEventListener("keypress", function(event) {
     }
 }); 
 
+
+// old bg: background-image: linear-gradient(333deg, hsl(232.3, 29%, 42%) 0%, rgb(232, 218, 218) 100%); 

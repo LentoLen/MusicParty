@@ -1,5 +1,5 @@
 :root {
-    --bg: #212121;
+    --txtShadow: rgba(0,0,0,0.1);
     --fg: white;
     --secFg: #909090;
     --secBg: rgba(255, 255, 255, 0.2);
@@ -19,14 +19,33 @@ body {
     right: 0;
     z-index: 1;
     display: block;
-    background-image: linear-gradient(333deg, hsl(232.3, 29%, 42%) 0%, rgb(232, 218, 218) 100%); 
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
     width: 100%;
     height: 100%;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-size: cover;
+	background-size: 400% 400%;
     transform: scale(1.5); 
     filter: blur(400px) brightness(50%) saturate(4);
+    animation: gradient 120s linear infinite;
+}
+
+@keyframes gradient {
+    0% {
+		background-position: left top;
+	}
+    25% {
+        background-position: right top;
+    }
+	50% {
+		background-position: left bottom;
+	}
+    75% {
+        background-position: right bottom;
+    }
+	100% {
+		background-position: left top;
+	}
 }
 
 .content {
@@ -45,9 +64,9 @@ body {
 #searchbar {
     width: min(100%, 600px);
     border: 0;
-    border-radius: 25px;
+    border-radius: var(--bdradius);
     background-color: var(--secBg);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 30px var(--txtShadow);
     backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     height: 50px;
@@ -66,7 +85,7 @@ body {
     font-size: 1em;
     color: inherit;
     padding-left: 20px;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    text-shadow: 0 1px 3px var(--txtShadow);
 }
 
 #searchSubmit {
@@ -81,7 +100,6 @@ input:focus {
 }
 
 #suggestion {
-    display: none;
     width: 90%;
     overflow: hidden;
     white-space: nowrap;
@@ -91,29 +109,28 @@ input:focus {
     font-size: 1em;
     color: inherit;
     padding-left: 20px;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    text-shadow: 0 1px 3px var(--txtShadow);
     position: absolute;
     top: 13.5px;
     left: 2px;
     opacity: 0.7; 
-    pointer-events: none; 
+    cursor: text;
 }
 
-
-    /* Style for the video iframe */
-    #vid_frame {
+#vid_frame {
         width: min(100%, 600px);
         height: auto;
         margin-top: 20px;
         aspect-ratio: 1/1;
         border-radius: 2rem;
         box-shadow: rgba(0, 0, 0, 0.2) 0px 20px 30px;
+        display: none;
     }
 
 #vid_info {
     font-size: 2rem;
     margin-top: 30px;
-    text-shadow: 0 4px 30px rgba(0,0,0,0.1);
+    text-shadow: 0 4px 30px var(--txtShadow);
     width: min(100%, 600px);
     overflow: hidden;
 }
