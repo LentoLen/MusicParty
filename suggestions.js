@@ -115,4 +115,5 @@ function applySuggestion() {
     searchInput.value = suggestions_div.dataset.suggestion
     suggestions_div.innerHTML = ""
     validateInput()
+    searchInput.focus()
 }
