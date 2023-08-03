@@ -30,13 +30,7 @@ function search() {
             const thumbnail = data.videos[0].thumbnail;
             const title = data.videos[0].title
             const artist = data.videos[0].artists[0].name
-            const background_image = document.getElementById("bg_img")
-            background_image.style.backgroundImage = (`url(${thumbnail})`)
-            console.log(thumbnail)
-            const vid_frame = document.getElementById("vid_frame")
-            vid_frame.src = `https://www.youtube.com/embed/${videoId}?&autoplay=1`
-            vid_frame.style.display = "block"
-            document.getElementById("vid_info").innerText = `${title} - ${artist}`
+            addToQueue(videoId, thumbnail, title, artist)
         }
     })
     .catch((error) => {
@@ -49,6 +43,3 @@ searchInput.addEventListener("keypress", function(event) {
         search()
     }
 }); 
-
-
-// old bg: background-image: linear-gradient(333deg, hsl(232.3, 29%, 42%) 0%, rgb(232, 218, 218) 100%); 

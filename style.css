@@ -102,7 +102,7 @@ input:focus {
     pointer-events: auto;
 }
 
-#vid_frame {
+#player {
         width: min(100%, 600px);
         height: auto;
         margin-top: 20px;
