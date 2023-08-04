@@ -48,7 +48,7 @@ function resetSearchbar() {
     searchSubmit.className = searchSubmit.className.replace("spin", "")
     searchInput.value = ""
     searchInput.disabled = false
-    document.getElementById("lyrics").innerHTML = ""
+    suggestions_div.innerText = ""
 }
 
 function showSnackbar(message, timeout=3000) {
