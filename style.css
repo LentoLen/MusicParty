@@ -206,6 +206,7 @@ input:focus {
 .ctrl_btn {
     font-size: 4rem;
     cursor: pointer;
+    user-select: none;
 }
 
 @keyframes fadein {
