@@ -16,8 +16,22 @@ function onYouTubeIframeAPIReady() {
 
 function onPlayerStateChange(event) {
     console.log('Player State Change:', event.data);
-    if (event.data === YT.PlayerState.ENDED) {
-        playNextVideo();
+
+    switch (event.data) {
+        case YT.PlayerState.ENDED:
+            playNextVideo();
+            break;
+
+        case YT.PlayerState.PLAYING:
+            document.getElementById("play_btn").innerText = "pause";
+            break;
+
+        case YT.PlayerState.PAUSED:
+            document.getElementById("play_btn").innerText = "play_arrow";
+            break;
+    
+        default:
+            break;
     }
 }
 
@@ -44,8 +58,11 @@ function updatePlayer(videoId, thumbnail, title, artist) {
     console.log(thumbnail)
     player.loadVideoById(videoId)
     player.getIframe().style.display = "block"
+    document.getElementById("player_controls").style.visibility = "visible"
+    document.getElementById("queue_lyrics_div").style.display= "block"
     document.getElementById("vid_info").innerText = `${title} - ${artist}`
     currentVideoId = videoId
+    getLyrics()
 }
 
 function addToQueue(videoId, thumbnail, title, artist) {
@@ -53,6 +70,8 @@ function addToQueue(videoId, thumbnail, title, artist) {
 
     if (player.getPlayerState() === 5) {
         playNextVideo()
+    } else {
+        showSnackbar(`added "${title} - ${artist}" to queue`)
     }
 }
 
@@ -61,3 +80,28 @@ function getAutoplayNext() {
     return fetch(autoplayUrl, getJsonHeaders)
         .then(response => response.json())
 }
+
+function getLyrics() {
+    const lyricsUrl = `${apiUrl}/lyrics/?videoId=${encodeURIComponent(currentVideoId)}`
+    fetch(lyricsUrl, getJsonHeaders)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("lyrics").innerHTML = `${data["lyrics"]}<br>${data["source"]}`
+    })
+}
+
+function playPause() {
+    switch (player.getPlayerState()) {
+        case YT.PlayerState.PLAYING:
+            player.pauseVideo()
+            break;
+
+        case YT.PlayerState.PAUSED:
+            player.playVideo()
+    
+        default:
+            break;
+    } 
+}
+
+window.addEventListener("keydown", e => {if (e.code === 'Space' && document.activeElement !== searchInput) {e.preventDefault(); playPause()}})
