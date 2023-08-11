@@ -22,12 +22,27 @@
                 <div id="player"></div>
                 <div id="vid_info"></div>
                 <div id="player_controls">
-                    <div id="prev_btn" class="material-symbols-outlined ctrl_btn">skip_previous</div>
+                    <div id="prev_btn" class="material-symbols-outlined ctrl_btn" onclick="playPrevious()">skip_previous</div>
                     <div id="play_btn" class="material-symbols-outlined ctrl_btn" onclick="playPause()">play_arrow</div>
                     <div id="next_btn" class="material-symbols-outlined ctrl_btn" onclick="playNextVideo()">skip_next</div>
                 </div>
             </div>
             <div id="queue_lyrics_div">
+
+                <div id="tab_switcher">
+                    <div class="tab active" id="tab_queue" onclick="showQueueTab()">Queue</div>
+                    <div class="tab" id="tab_lyrics" onclick="showLyricsTab()">Lyrics</div>
+                </div>
+
+                <div id="queue_div" class="active">
+                    <p style="font-size: 2rem;">Queue</p>
+                    <div id="queue">
+                        <div id="queue_history"></div>
+                        <div id="queue_next"></div>
+                        <div id="queue_autoplay"></div>
+                    </div>
+                </div>
+
                 <div id="lyrics_div"><p style="font-size: 2rem;">Lyrics</p><div id="lyrics"></div></div>
             </div>
             <div id="snackbar"></div>
