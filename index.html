@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <a href="" style="visibility: hidden; position: absolute;" id="dl-link"></a>
     <div class="bg-image" id="bg_img"></div>
     <div class="scrollable_content">
         <div class="content">
@@ -35,15 +36,16 @@
                 </div>
 
                 <div id="queue_div" class="active">
-                    <p style="font-size: 2rem;">Queue</p>
+                    <p style="font-size: 2rem; user-select: none;">Queue</p>
                     <div id="queue">
                         <div id="queue_history"></div>
+                        <div id="queue_playing"></div>
                         <div id="queue_next"></div>
                         <div id="queue_autoplay"></div>
                     </div>
                 </div>
 
-                <div id="lyrics_div"><p style="font-size: 2rem;">Lyrics</p><div id="lyrics"></div></div>
+                <div id="lyrics_div"><p style="font-size: 2rem; user-select: none;">Lyrics</p><div id="lyrics"></div></div>
             </div>
             <div id="snackbar"></div>
 
