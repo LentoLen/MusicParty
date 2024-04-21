@@ -2,7 +2,10 @@ let player;
 let videoQueue = [];
 let autoQueue = {}
 let history = []
+let lyricsLoaded = ""
 let currentVideoId;
+let lyrics_dict;
+let last_scrolled = Date.now()
 
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
@@ -26,6 +29,7 @@ function onPlayerStateChange(event) {
 
         case YT.PlayerState.PLAYING:
             document.getElementById("play_btn").innerText = "pause";
+            getLyrics()
             break;
 
         case YT.PlayerState.PAUSED:
@@ -61,15 +65,14 @@ function updatePlayer(videoId, thumbnail, title, artist) {
     document.getElementById("vid_info").innerText = `${title} - ${artist}`;
     currentVideoId = videoId;
     getAutoplay();
-    getLyrics();
     showQueueNext();
     showPlaying();
     showHistory();
     scrollToNextQueue();
 }
 
-function addToQueue(videoId, thumbnail, title, artist) {
-    videoQueue.push({"videoId": videoId, "thumbnail": thumbnail, "title": title, "artist": artist});
+function addToQueue(videoId, thumbnail, title, artist, album) {
+    videoQueue.push({"videoId": videoId, "thumbnail": thumbnail, "title": title, "artist": artist, "album": album});
     
     if (player.getPlayerState() === 5) {
         playNextVideo();
@@ -192,7 +195,7 @@ function getAutoplay() {
     fetch(autoplayUrl, getJsonHeaders)
         .then(response => response.json())
         .then(data => {
-            autoQueue = {"videoId": data["videoId"], "thumbnail": data["thumbnail"], "title": data["title"], "artist": data["artists"][0]["name"]};
+            autoQueue = {"videoId": data["videoId"], "thumbnail": data["thumbnail"], "title": data["title"], "artist": data["artists"][0]["name"], "album": data["album"]["name"]};
             document.getElementById("queue_autoplay").innerHTML = `<p style="user-select: none;">autoplay</p><div class="queue_item" onclick="addAutoplayToQueue()"><img src="${autoQueue["thumbnail"]}" class="queue_item_thumbnail"></img><div class="queue_item_details"><div class="queue_item_title">${autoQueue["title"]}</div><div class="queue_item_artist">${autoQueue["artist"]}</div></div><div class="material-symbols-outlined queue_item_dismiss" onclick="dismissAutoplay(event)">close</div>`;
         })
         .catch(error => {
@@ -202,12 +205,30 @@ function getAutoplay() {
 }
 
 function getLyrics() {
+    if (lyricsLoaded == currentVideoId) {
+        return
+    }
+    let info = history.at(-1)
     document.getElementById("lyrics").innerHTML = `loading...`;
-    const lyricsUrl = `${apiUrl}/lyrics/?videoId=${encodeURIComponent(currentVideoId)}`
+    if (!info["album"]) {
+        info["album"] = info["title"]
+    }
+    const lyricsUrl = `https://lrclib.net/api/get?artist_name=${info["artist"]}&track_name=${info["title"]}&album_name=${info["album"]}&duration=${player.getDuration()}`
     fetch(lyricsUrl, getJsonHeaders)
         .then(response => response.json())
         .then(data => {
-            document.getElementById("lyrics").innerHTML = `${data["lyrics"]}<br>${data["source"]}`;
+            if (data["syncedLyrics"]) {
+                lyrics_dict = splitLrcToDict(data["syncedLyrics"])
+                document.getElementById("lyrics").innerHTML = ""
+                for (let line in lyrics_dict) {
+                    document.getElementById("lyrics").innerHTML += `<p id=${line} class="lrc" onclick="player.seekTo(${mmssToSeconds(line)}); syncLyricsOnClick('${line}');">${lyrics_dict[line]}</p>`
+                }
+                lyricsLoaded = currentVideoId;
+            } else if (data["plainLyrics"]) {
+                document.getElementById("lyrics").innerHTML = data["plainLyrics"];
+            } else {
+                document.getElementById("lyrics").innerHTML = "no lyrics found";
+            }
     })
 }
 
@@ -237,3 +258,69 @@ function playPause() {
 }
 
 window.addEventListener("keydown", e => {if (e.code === 'Space' && document.activeElement !== searchInput) {e.preventDefault(); playPause()}})
+
+function removeClassFromChildren(parentElement, className) {
+    const children = parentElement.children;
+    for (let i = 0; i < children.length; i++) {
+        children[i].classList.remove(className);
+    }
+}
+
+function mmssToSeconds(timeString) {
+    var parts = timeString.split(':');
+    var minutes = parseInt(parts[0]);
+    var seconds = parseFloat(parts[1]);
+    return minutes * 60 + seconds;
+}
+
+function splitLrcToDict(lyrics) {
+    const lrcDict = {};
+    const regex = /\[(\d+:\d+\.\d+)\](.+)/g;
+    let match;
+
+    while ((match = regex.exec(lyrics)) !== null) {
+        const timestamp = match[1];
+        const lyricsLine = match[2].trim();
+        
+        if (lrcDict.hasOwnProperty(timestamp)) {
+            lrcDict[timestamp] += "\n" + lyricsLine;
+        } else {
+            lrcDict[timestamp] = lyricsLine;
+        }
+    }
+
+    return lrcDict;
+}
+
+function syncLyricsOnClick(lrcTime) {
+    removeClassFromChildren(document.getElementById("lyrics"), "cur_lrc")
+    document.getElementById(lrcTime).classList.add("cur_lrc")
+    document.getElementById(lrcTime).scrollIntoView({behavior: "smooth", block: "center"})
+}
+
+function syncLyrics() {
+    if (document.getElementById("tab_lyrics").classList.contains("active") && lyricsLoaded == currentVideoId && player.getPlayerState() == 1) {
+        let curTime = player.getCurrentTime() 
+        let curLrc
+        for (let line in lyrics_dict) {
+            if (curTime >= mmssToSeconds(line)) {
+                removeClassFromChildren(document.getElementById("lyrics"), "cur_lrc")
+                curLrc = line
+            }
+        }
+        if (curLrc) {
+            document.getElementById(curLrc).classList.add("cur_lrc")
+            if ((last_scrolled+3000) < Date.now()) {
+                document.getElementById(curLrc).scrollIntoView({behavior: "smooth", block: "center"})
+                setTimeout(function() {last_scrolled = 0;}, 800);
+            }
+        }
+    }
+}
+setInterval(syncLyrics, 1000)
+
+function updateScrollTimeout() {
+    last_scrolled = Date.now()
+}
+
+document.getElementById("lyrics_div").addEventListener("scroll", updateScrollTimeout)

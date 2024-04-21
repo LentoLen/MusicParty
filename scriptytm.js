@@ -37,7 +37,8 @@ function search() {
             const thumbnail = data.videos[0].thumbnail;
             const title = data.videos[0].title;
             const artist = data.videos[0].artists[0].name;
-            addToQueue(videoId, thumbnail, title, artist);
+            const album = data.videos[0].album.name;
+            addToQueue(videoId, thumbnail, title, artist, album);
             resetSearchbar();
         } else {
             showSnackbar(`"${inp}" not found`);
