@@ -221,7 +221,7 @@ function getLyrics() {
     if (!info["album"]) {
         info["album"] = info["title"];
     }
-    const lyricsUrl = `https://lrclib.net/api/get?artist_name=${info["artist"]}&track_name=${info["title"]}&album_name=${info["album"]}&duration=${player.getDuration()}`;
+    const lyricsUrl = `https://lrclib.net/api/get?artist_name=${info["artists"]}&track_name=${info["title"]}&album_name=${info["album"]}&duration=${player.getDuration()}`;
     fetch(lyricsUrl, getJsonHeaders)
         .then(response => response.json())
         .then(data => {
