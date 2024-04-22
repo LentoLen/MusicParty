@@ -121,7 +121,7 @@ function showPlaying() {
             dlBtn.innerHTML = "progress_activity";
             dlBtn.style.animation = "spin 1.2s cubic-bezier(.25,.41,.68,.55) infinite";
             dlBtn.style.pointerEvents = "none";
-            download_audio(videoId, title);
+            download_audio(videoId, title, vidPlaying.artist, vidPlaying.artists, vidPlaying.album);
             event.stopPropagation();
         });
         
@@ -147,8 +147,9 @@ function showHistory() {
     }
 }
 
-function download_audio(videoId, title) {
-    fetch(`https://ytdapi.onrender.com/download-audio/?video_id=${videoId}`)
+function download_audio(videoId, title, artist, artists, album) {
+    //fetch(`https://ytdapi.onrender.com/download-audio/?video_id=${videoId}`)
+    fetch(`https://fastytd-1-v3274558.deta.app/download_tagged?videoId=${videoId}&title=${title}&artist=${artist}&artists=${artists}&album=${album}`)
         .then(response => response.blob())
         .then(blob => {
             const audioUrl = window.URL.createObjectURL(blob);
