@@ -1,11 +1,11 @@
 let player;
 let videoQueue = [];
-let autoQueue = {}
-let history = []
-let lyricsLoaded = ""
+let autoQueue = {};
+let history = [];
+let lyricsLoaded = "";
 let currentVideoId;
 let lyrics_dict;
-let last_scrolled = Date.now()
+let last_scrolled = Date.now();
 
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
@@ -29,7 +29,7 @@ function onPlayerStateChange(event) {
 
         case YT.PlayerState.PLAYING:
             document.getElementById("play_btn").innerText = "pause";
-            getLyrics()
+            getLyrics();
             break;
 
         case YT.PlayerState.PAUSED:
@@ -71,8 +71,8 @@ function updatePlayer(videoId, thumbnail, title, artist) {
     scrollToNextQueue();
 }
 
-function addToQueue(videoId, thumbnail, title, artist, album) {
-    videoQueue.push({"videoId": videoId, "thumbnail": thumbnail, "title": title, "artist": artist, "album": album});
+function addToQueue(videoId, thumbnail, title, artist, album, artists) {
+    videoQueue.push({"videoId": videoId, "thumbnail": thumbnail, "title": title, "artist": artist, "album": album, "artists": artists});
     
     if (player.getPlayerState() === 5) {
         playNextVideo();
@@ -108,22 +108,22 @@ function showQueueNext() {
 }
 
 function showPlaying() {
-    console.log("playing", history[0]["title"])
+    console.log("playing", history[0]["title"]);
     if (history.length > 0) {
-        const vidPlaying = history[history.length-1]
-        const videoId = vidPlaying["videoId"]
-        const title = vidPlaying["title"]
+        const vidPlaying = history[history.length-1];
+        const videoId = vidPlaying["videoId"];
+        const title = vidPlaying["title"];
         document.getElementById("queue_playing").innerHTML = "<p style='user-select: none;'>playing</p>";
         document.getElementById("queue_playing").innerHTML += `<div class="queue_item" onclick="playPause()"><img src="${vidPlaying["thumbnail"]}" class="queue_item_thumbnail"></img><div class="queue_item_details"><div class="queue_item_title">${vidPlaying["title"]}</div><div class="queue_item_artist">${vidPlaying["artist"]}</div></div><div id="dl-btn" style="padding-top:20px; padding-bottom:20px; height:fit-content;" class="material-symbols-outlined queue_item_dismiss">download</div>`;
-        const dlBtn = document.getElementById("dl-btn")
+        const dlBtn = document.getElementById("dl-btn");
         dlBtn.addEventListener("click", function (event) {
-            dlBtn.style.color = "var(--secBg)"
-            dlBtn.innerHTML = "progress_activity"
-            dlBtn.style.animation = "spin 1.2s cubic-bezier(.25,.41,.68,.55) infinite"
-            dlBtn.style.pointerEvents = "none"
-            download_audio(videoId, title)
-            event.stopPropagation()
-        })
+            dlBtn.style.color = "var(--secBg)";
+            dlBtn.innerHTML = "progress_activity";
+            dlBtn.style.animation = "spin 1.2s cubic-bezier(.25,.41,.68,.55) infinite";
+            dlBtn.style.pointerEvents = "none";
+            download_audio(videoId, title);
+            event.stopPropagation();
+        });
         
     } else {
         document.getElementById("queue_playing").innerHTML = "";
@@ -151,14 +151,14 @@ function download_audio(videoId, title) {
     fetch(`https://ytdapi.onrender.com/download-audio/?video_id=${videoId}`)
         .then(response => response.blob())
         .then(blob => {
-            const audioUrl = window.URL.createObjectURL(blob)
-            const dlLink = document.getElementById("dl-link")
-            dlLink.href = audioUrl
-            dlLink.download = `${title}.m4a`
-            dlLink.click()
-            const dlBtn = document.getElementById("dl-btn")
-            dlBtn.style.animation = "none"
-            dlBtn.innerHTML = "download"
+            const audioUrl = window.URL.createObjectURL(blob);
+            const dlLink = document.getElementById("dl-link");
+            dlLink.href = audioUrl;
+            dlLink.download = `${title}.m4a`;
+            dlLink.click();
+            const dlBtn = document.getElementById("dl-btn");
+            dlBtn.style.animation = "none";
+            dlBtn.innerHTML = "download";
         })
     
     
@@ -195,7 +195,15 @@ function getAutoplay() {
     fetch(autoplayUrl, getJsonHeaders)
         .then(response => response.json())
         .then(data => {
-            autoQueue = {"videoId": data["videoId"], "thumbnail": data["thumbnail"], "title": data["title"], "artist": data["artists"][0]["name"], "album": data["album"]["name"]};
+            let artists_list = [];
+            data.artists.forEach(element => {
+                artists_list.push(element.name);
+            });
+            let album_name = data.album.name;
+            if (!album_name) {
+                album_name = data.title;
+            } 
+            autoQueue = {"videoId": data["videoId"], "thumbnail": data["thumbnail"], "title": data["title"], "artist": data["artists"][0]["name"], "album": album_name, "artists": artists_list.join(", ")};
             document.getElementById("queue_autoplay").innerHTML = `<p style="user-select: none;">autoplay</p><div class="queue_item" onclick="addAutoplayToQueue()"><img src="${autoQueue["thumbnail"]}" class="queue_item_thumbnail"></img><div class="queue_item_details"><div class="queue_item_title">${autoQueue["title"]}</div><div class="queue_item_artist">${autoQueue["artist"]}</div></div><div class="material-symbols-outlined queue_item_dismiss" onclick="dismissAutoplay(event)">close</div>`;
         })
         .catch(error => {
@@ -211,17 +219,17 @@ function getLyrics() {
     let info = history.at(-1)
     document.getElementById("lyrics").innerHTML = `loading...`;
     if (!info["album"]) {
-        info["album"] = info["title"]
+        info["album"] = info["title"];
     }
-    const lyricsUrl = `https://lrclib.net/api/get?artist_name=${info["artist"]}&track_name=${info["title"]}&album_name=${info["album"]}&duration=${player.getDuration()}`
+    const lyricsUrl = `https://lrclib.net/api/get?artist_name=${info["artist"]}&track_name=${info["title"]}&album_name=${info["album"]}&duration=${player.getDuration()}`;
     fetch(lyricsUrl, getJsonHeaders)
         .then(response => response.json())
         .then(data => {
             if (data["syncedLyrics"]) {
-                lyrics_dict = splitLrcToDict(data["syncedLyrics"])
-                document.getElementById("lyrics").innerHTML = ""
+                lyrics_dict = splitLrcToDict(data["syncedLyrics"]);
+                document.getElementById("lyrics").innerHTML = "";
                 for (let line in lyrics_dict) {
-                    document.getElementById("lyrics").innerHTML += `<p id=${line} class="lrc" onclick="player.seekTo(${mmssToSeconds(line)}); syncLyricsOnClick('${line}');">${lyrics_dict[line]}</p>`
+                    document.getElementById("lyrics").innerHTML += `<p id=${line} class="lrc" onclick="player.seekTo(${mmssToSeconds(line)}); syncLyricsOnClick('${line}');">${lyrics_dict[line]}</p>`;
                 }
                 lyricsLoaded = currentVideoId;
             } else if (data["plainLyrics"]) {
@@ -293,34 +301,34 @@ function splitLrcToDict(lyrics) {
 }
 
 function syncLyricsOnClick(lrcTime) {
-    removeClassFromChildren(document.getElementById("lyrics"), "cur_lrc")
-    document.getElementById(lrcTime).classList.add("cur_lrc")
-    document.getElementById(lrcTime).scrollIntoView({behavior: "smooth", block: "center"})
+    removeClassFromChildren(document.getElementById("lyrics"), "cur_lrc");
+    document.getElementById(lrcTime).classList.add("cur_lrc");
+    document.getElementById(lrcTime).scrollIntoView({behavior: "smooth", block: "center"});
 }
 
 function syncLyrics() {
     if (document.getElementById("tab_lyrics").classList.contains("active") && lyricsLoaded == currentVideoId && player.getPlayerState() == 1) {
-        let curTime = player.getCurrentTime() 
-        let curLrc
+        let curTime = player.getCurrentTime();
+        let curLrc;
         for (let line in lyrics_dict) {
             if (curTime >= mmssToSeconds(line)) {
-                removeClassFromChildren(document.getElementById("lyrics"), "cur_lrc")
-                curLrc = line
+                removeClassFromChildren(document.getElementById("lyrics"), "cur_lrc");
+                curLrc = line;
             }
         }
         if (curLrc) {
-            document.getElementById(curLrc).classList.add("cur_lrc")
+            document.getElementById(curLrc).classList.add("cur_lrc");
             if ((last_scrolled+3000) < Date.now()) {
-                document.getElementById(curLrc).scrollIntoView({behavior: "smooth", block: "center"})
+                document.getElementById(curLrc).scrollIntoView({behavior: "smooth", block: "center"});
                 setTimeout(function() {last_scrolled = 0;}, 800);
             }
         }
     }
 }
-setInterval(syncLyrics, 1000)
+setInterval(syncLyrics, 1000);
 
 function updateScrollTimeout() {
-    last_scrolled = Date.now()
+    last_scrolled = Date.now();
 }
 
-document.getElementById("lyrics_div").addEventListener("scroll", updateScrollTimeout)
+document.getElementById("lyrics_div").addEventListener("scroll", updateScrollTimeout);

@@ -33,12 +33,21 @@ function search() {
    .then(response => response.json())
    .then(data => {
         if (data.videos.length > 0) {
+            let artists_list = []
+            data.videos[0].artists.forEach(element => {
+                artists_list.push(element.name);
+            });
+            let album_name = data.videos[0].album.name;
+            if (!album_name) {
+                album_name = data.videos[0].title;
+            } 
             const videoId = data.videos[0].videoId;
             const thumbnail = data.videos[0].thumbnail;
             const title = data.videos[0].title;
             const artist = data.videos[0].artists[0].name;
-            const album = data.videos[0].album.name;
-            addToQueue(videoId, thumbnail, title, artist, album);
+            const album = album_name;
+            const artists = artists_list.join(", ");
+            addToQueue(videoId, thumbnail, title, artist, album, artists);
             resetSearchbar();
         } else {
             showSnackbar(`"${inp}" not found`);
