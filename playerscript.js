@@ -323,9 +323,13 @@ function syncLyrics() {
             }
         }
         if (curLrc) {
-            document.getElementById(curLrc).classList.add("cur_lrc");
+            const lrcScrollView = document.getElementById("lyrics_div")
+            const lrcEl = document.getElementById(curLrc)
+            lrcEl.classList.add("cur_lrc");
             if ((last_scrolled+3000) < Date.now()) {
-                document.getElementById(curLrc).scrollIntoView({behavior: "smooth", block: "center"});
+                //document.getElementById(curLrc).scrollIntoView({behavior: "smooth", block: "center"});
+                const scrollTop = lrcEl.offsetTop - (lrcScrollView.offsetHeight - lrcEl.offsetHeight) / 2;
+                lrcScrollView.scrollTo({top: scrollTop, behavior: "smooth"})
                 setTimeout(function() {last_scrolled = 0;}, 800);
             }
         }
