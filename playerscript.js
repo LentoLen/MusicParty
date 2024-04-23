@@ -164,6 +164,7 @@ function download_audio(videoId, title, artist, artists, album) {
         .catch(error => {
             showSnackbar("Couldn't download song... If the song is longer than 3-4 minutes, this is a known error at the moment");
             console.error("Error downloading song:", error);
+            const dlBtn = document.getElementById("dl-btn");
             dlBtn.style.animation = "none";
             dlBtn.innerHTML = "download"
         })  
